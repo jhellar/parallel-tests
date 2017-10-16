@@ -1,0 +1,19 @@
+{
+  "name": "parallel-tests",
+  "version": "1.0.0",
+  "description": "",
+  "main": "parallel-tests.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jan Hellar",
+  "license": "ISC",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "generic-pool": "^3.2.0",
+    "junit-report-builder": "^1.2.0"
+  },
+  "bin": {
+    "parallel-tests": "./parallel-runner.js"
+  }
+}
