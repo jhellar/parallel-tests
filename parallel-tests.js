@@ -1,4 +1,4 @@
-
+const pool = require('generic-pool');
 const Task = require('./model/task');
 const Suite = require('./model/suite');
 const GlobalSuite = require('./model/global-suite');
@@ -32,6 +32,10 @@ function task(title, params, run) {
     title = '';
   }
   new Task(title, params.requires, params.result, run, params.skipReport);
+}
+
+function createPool(max) {
+  return pool.createPool({ create: () => Promise.resolve(), destroy: () => Promise.resolve() }, { max });
 }
 
 module.exports = {
