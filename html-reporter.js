@@ -63,7 +63,7 @@ function failureReport(title, error) {
   failure('.collapse').attr('id', `collapse${id}`);
   failure('.card').empty();
   failure('.card').append(`<p>${error}</p>`);
-  failure('.card').append(`<p>${error.stack}</p>`);
+  failure('.card').append(`<pre>${error.stack}</pre>`);
   return failure.html();
 }
 
