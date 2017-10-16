@@ -52,7 +52,7 @@ function generateReport(job) {
     const report = jobReport(job);
     $('#report').append(report);
   });
-  fs.writeFileSync(path.resolve(__dirname, 'report2.html'), $.html());
+  fs.writeFileSync('report.html', $.html());
 }
 
 function failureReport(title, error) {
