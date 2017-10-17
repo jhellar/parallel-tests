@@ -23,7 +23,7 @@ class Task extends Job {
           error = err;
         }
         if (this.parent.afterEach) {
-          await this.parent.afterEach();
+          await this.parent.afterEach(error);
         }
         if (error) {
           throw error;
