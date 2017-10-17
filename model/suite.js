@@ -37,15 +37,9 @@ class Suite extends Job {
       await Promise.all(this.jobs.map(job => job.promise));
     } catch (error) {
       this.status = 'error';
-      if (this.after) {
-        await this.after();
-      }
       throw error;
     }
     this.result = this.suiteResources[this.resultName];
-    if (this.after) {
-      await this.after();
-    }
   }
 
   addJob(job) {

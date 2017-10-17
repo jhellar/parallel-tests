@@ -44,13 +44,11 @@ function afterEach(run) {
 }
 
 function before(run) {
-  const currentSuite = SuitesManager.currentSuite();
-  currentSuite.beforePromise = run();
+  it('before', run, true);
 }
 
 function after(run) {
-  const currentSuite = SuitesManager.currentSuite();
-  currentSuite.after = run;
+  it('after', run, true);
 }
 
 function createPool(max) {
@@ -61,13 +59,13 @@ function createGlobalPool(name, max) {
   new Task('Global pool', [], name, () => createPool(max), true);
 }
 
-function it(title, run) {
+function it(title, run, skipReport) {
   const currentSuite = SuitesManager.currentSuite();
   if (!currentSuite.itPool) {
     currentSuite.itPool = true;
     currentSuite.suiteResources.itPool = Promise.resolve(createPool(1));
   }
-  new Task(title, 'itPool', null, run);
+  new Task(title, 'itPool', null, run, skipReport);
 }
 
 module.exports = {
