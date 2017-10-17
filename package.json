@@ -1,6 +1,6 @@
 {
   "name": "parallel-tests",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "",
   "main": "parallel-tests.js",
   "scripts": {
