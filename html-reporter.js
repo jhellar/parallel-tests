@@ -68,12 +68,13 @@ function failureReport(title, error) {
 }
 
 function taskReport(task) {
+  if (task.status === 'error') {
+    return failureReport(task.title, task.error);
+  }
   if (task.skipReport) {
     return '';
   }
-  if (task.status === 'error') {
-    return failureReport(task.title, task.error);
-  } else if (task.status === 'skipped') {
+  if (task.status === 'skipped') {
     return `<p><span class="oi oi-warning" title="icon name" aria-hidden="true" style="color:blue"></span> ${task.title}</p>`;
   }
   return `<p><span class="oi oi-circle-check" title="icon name" aria-hidden="true" style="color:green"></span> ${task.title}</p>`;

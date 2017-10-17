@@ -18,7 +18,6 @@ async function run() {
   }
   HTMLReporter.report(globalSuite);
   JUnitReporter.report(globalSuite);
-  // console.log(globalSuite.jobs[globalSuite.jobs.length - 1].jobs.map(job => job.title));
 }
 
 async function suite(title, params, configure) {
@@ -34,12 +33,30 @@ function task(title, params, run) {
   new Task(title, params.requires, params.result, run, params.skipReport);
 }
 
+function beforeEach(run) {
+  const currentSuite = SuitesManager.currentSuite();
+  currentSuite.beforeEach = run;
+}
+
+function afterEach(run) {
+  const currentSuite = SuitesManager.currentSuite();
+  currentSuite.afterEach = run;
+}
+
 function createPool(max) {
   return pool.createPool({ create: () => Promise.resolve(), destroy: () => Promise.resolve() }, { max });
+}
+
+function createGlobalPool(name, max) {
+  new Task('Global pool', [], name, () => createPool(max), true);
 }
 
 module.exports = {
   suite,
   task,
-  run
+  run,
+  createPool,
+  createGlobalPool,
+  beforeEach,
+  afterEach
 }

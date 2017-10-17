@@ -9,19 +9,25 @@ class Task extends Job {
   }
 
   async execute() {
-    let tries = 0;
+    let retries = 0;
     let finished = false;
     while (!finished) {
-      tries += 1;
       try {
+        if (this.parent.beforeEach) {
+          await this.parent.beforeEach();
+        }
         this.result = await this.run(...this.resources);
+        if (this.parent.afterEach) {
+          await this.parent.afterEach();
+        }
         finished = true;
       } catch (error) {
-        if (tries >= 3) {
+        if (retries >= 3) {
           this.status = 'error';
           this.error = error;
           throw error;
         }
+        retries += 1;
       }
     }
   }
