@@ -49,8 +49,16 @@ class Job {
       throw error;
     }
     this.log();
-    await this.execute();
+    let error;
+    try {
+      await this.execute();
+    } catch (err) {
+      error = err;
+    }
     this.releaseResources();
+    if (error) {
+      throw error;
+    }
     return this.result;
   }
 
