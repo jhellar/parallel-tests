@@ -55,7 +55,7 @@ function it(title, run) {
   const currentSuite = SuitesManager.currentSuite();
   if (!currentSuite.itPool) {
     currentSuite.itPool = true;
-    new Task('It pool', [], 'itPool', () => createPool(1), true);
+    currentSuite.suiteResources.itPool = Promise.resolve(createPool(1));
   }
   new Task(title, 'itPool', null, run);
 }
