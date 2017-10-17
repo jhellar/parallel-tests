@@ -16,9 +16,17 @@ class Task extends Job {
         if (this.parent.beforeEach) {
           await this.parent.beforeEach();
         }
-        this.result = await this.run(...this.resources);
+        let error;
+        try {
+          this.result = await this.run(...this.resources);
+        } catch (err) {
+          error = err;
+        }
         if (this.parent.afterEach) {
           await this.parent.afterEach();
+        }
+        if (error) {
+          throw error;
         }
         finished = true;
       } catch (error) {
