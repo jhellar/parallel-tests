@@ -51,6 +51,15 @@ function createGlobalPool(name, max) {
   new Task('Global pool', [], name, () => createPool(max), true);
 }
 
+function it(title, run) {
+  const currentSuite = SuitesManager.currentSuite();
+  if (!currentSuite.itPool) {
+    currentSuite.itPool = true;
+    new Task('It pool', [], 'itPool', () => createPool(1), true);
+  }
+  new Task(title, 'itPool', null, run);
+}
+
 module.exports = {
   suite,
   task,
@@ -58,5 +67,6 @@ module.exports = {
   createPool,
   createGlobalPool,
   beforeEach,
-  afterEach
+  afterEach,
+  it
 }
