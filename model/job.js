@@ -41,6 +41,9 @@ class Job {
   }
 
   async start() {
+    if (this.parent.beforePromise) {
+      await this.parent.beforePromise;
+    }
     try {
       await this.acquireResources();
     } catch (error) {

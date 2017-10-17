@@ -43,6 +43,16 @@ function afterEach(run) {
   currentSuite.afterEach = run;
 }
 
+function before(run) {
+  const currentSuite = SuitesManager.currentSuite();
+  currentSuite.beforePromise = run();
+}
+
+function after(run) {
+  const currentSuite = SuitesManager.currentSuite();
+  currentSuite.after = run;
+}
+
 function createPool(max) {
   return pool.createPool({ create: () => Promise.resolve(), destroy: () => Promise.resolve() }, { max });
 }
