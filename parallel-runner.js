@@ -11,6 +11,10 @@ for (let name in config.pools) {
   parallel.createGlobalPool(name, config.pools[name]);
 }
 
+config.resources.forEach(resource => {
+  parallel.createGlobalResource(resource);
+});
+
 config.testFiles.forEach(testFile => require(path.resolve(process.cwd(), testFile)));
 
 parallel.run();

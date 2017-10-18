@@ -59,6 +59,10 @@ function createGlobalPool(name, max) {
   new Task('Global pool', [], name, () => createPool(max), true);
 }
 
+function createGlobalResource(name) {
+  new Task('Global resource', [], name, () => Promise.resolve(), true);
+}
+
 function it(title, run, skipReport) {
   const currentSuite = SuitesManager.currentSuite();
   if (!currentSuite.itPool) {
@@ -74,6 +78,7 @@ module.exports = {
   run,
   createPool,
   createGlobalPool,
+  createGlobalResource,
   beforeEach,
   afterEach,
   it,
