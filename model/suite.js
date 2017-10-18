@@ -39,7 +39,7 @@ class Suite extends Job {
       this.status = 'error';
       throw error;
     }
-    this.result = this.suiteResources[this.resultName];
+    this.result = await this.suiteResources[this.resultName];
   }
 
   addJob(job) {

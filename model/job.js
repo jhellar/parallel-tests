@@ -6,13 +6,14 @@ let id = 0;
 
 class Job {
 
-  constructor(title, requires, result, run, skipReport) {
+  constructor(title, requires, result, run, skipReport, globalResult) {
     this.title = title;
     this.requires = requires;
     this.resultName = result;
     this.run = run;
     this.parent = SuitesManager.currentSuite();
     this.skipReport = skipReport;
+    this.globalResult = globalResult;
 
     id += 1;
     this.id = id;
@@ -36,6 +37,13 @@ class Job {
       this.promise = Promise.resolve();
     } else {
       this.promise = this.start();
+    }
+    if (this.globalResult) {
+      let globalSuite = this.parent;
+      while (globalSuite.parent) {
+        globalSuite = globalSuite.parent;
+      }
+      globalSuite.addJob(this);
     }
     this.parent.addJob(this);
   }

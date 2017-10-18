@@ -2,8 +2,8 @@ const Job = require('./job');
 
 class Task extends Job {
   
-  constructor(title, requires, result, run, skipReport) {
-    super(title, requires, result, run, skipReport);
+  constructor(title, requires, result, run, skipReport, globalResult) {
+    super(title, requires, result, run, skipReport, globalResult);
 
     this.execute = this.execute.bind(this);
   }

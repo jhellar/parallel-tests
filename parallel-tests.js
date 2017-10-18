@@ -30,7 +30,7 @@ function task(title, params, run) {
     params = title;
     title = '';
   }
-  new Task(title, params.requires, params.result, run, params.skipReport);
+  new Task(title, params.requires, params.result, run, params.skipReport, params.globalResult);
 }
 
 function beforeEach(run) {
