@@ -38,6 +38,9 @@ class Job {
     } else {
       this.promise = this.start();
     }
+    
+    this.existingResult = this.getExistingResult();
+
     if (this.globalResult) {
       let globalSuite = this.parent;
       while (globalSuite.parent) {
@@ -60,9 +63,8 @@ class Job {
     let error;
     try {
       // If result already exists skip execution
-      const result = this.getResult();
-      if (result) {
-        this.result = await result;
+      if (this.existingResult) {
+        this.result = await this.existingResult;
       } else {
         await this.execute();
       }
@@ -83,7 +85,7 @@ class Job {
     }
   }
 
-  getResult() {
+  getExistingResult() {
     let suite = this.parent;
     while (!suite.suiteResources[this.resultName] && suite.parent) {
       suite = suite.parent;
