@@ -59,7 +59,13 @@ class Job {
     this.log();
     let error;
     try {
-      await this.execute();
+      // If result already exists skip execution
+      const result = this.getResult();
+      if (result) {
+        this.result = await result;
+      } else {
+        await this.execute();
+      }
     } catch (err) {
       error = err;
     }
@@ -75,6 +81,14 @@ class Job {
       const time = Math.trunc(new Date().getTime() / 1000 - startTime);
       console.log(`${time}: ${this.status} - ${this.title} (${this.parent.title})`);
     }
+  }
+
+  getResult() {
+    let suite = this.parent;
+    while (!suite.suiteResources[this.resultName] && suite.parent) {
+      suite = suite.parent;
+    }
+    return suite.suiteResources[this.resultName];
   }
 
   async acquireResources() {    
