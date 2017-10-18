@@ -43,7 +43,7 @@ class Job {
       while (globalSuite.parent) {
         globalSuite = globalSuite.parent;
       }
-      globalSuite.addJob(this);
+      globalSuite.addResource(this);
     }
     this.parent.addJob(this);
   }
