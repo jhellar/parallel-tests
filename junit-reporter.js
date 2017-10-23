@@ -18,6 +18,7 @@ function reportTestCases(suiteReport, jobs, suiteTitle) {
         .name(job.title);
       if (job.status === 'error') {
         report.failure(job.error);
+        report.stacktrace(job.error.stack);
       }
       if (job.status === 'skipped') {
         report.skipped();
