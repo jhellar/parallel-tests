@@ -6,6 +6,7 @@ class Task extends Job {
     super(title, requires, result, run, skipReport, globalResult);
 
     this.execute = this.execute.bind(this);
+    this.tryWithTimeout = this.tryWithTimeout.bind(this);
   }
 
   async execute() {
@@ -18,7 +19,7 @@ class Task extends Job {
         }
         let error;
         try {
-          this.result = await this.run(...this.resources);
+          this.result = await tryWithTimeout(() => this.run(...this.resources), 60000);
         } catch (err) {
           error = err;
         }
@@ -38,6 +39,16 @@ class Task extends Job {
         retries += 1;
       }
     }
+  }
+
+  tryWithTimeout(func, ms) {
+    return new Promise((resolve, reject) => {
+      func().then(resolve, reject);
+  
+      setTimeout(() => {
+        reject('Timed out');
+      }, ms);
+    });
   }
 
 }
