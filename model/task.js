@@ -19,7 +19,7 @@ class Task extends Job {
         }
         let error;
         try {
-          this.result = await tryWithTimeout(() => this.run(...this.resources), 60000);
+          this.result = await tryWithTimeout(() => this.run(...this.resources), 600000);
         } catch (err) {
           error = err;
         }
