@@ -1,10 +1,11 @@
 {
   "name": "parallel-tests",
-  "version": "1.0.26",
+  "version": "1.0.27",
   "description": "",
   "main": "parallel-tests.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "eslint": "eslint *.js model/*.js"
   },
   "author": "Jan Hellar",
   "license": "ISC",
@@ -15,5 +16,10 @@
   },
   "bin": {
     "parallel-tests": "./parallel-runner.js"
+  },
+  "devDependencies": {
+    "eslint": "^4.11.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.8.0"
   }
 }

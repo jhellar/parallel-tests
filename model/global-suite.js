@@ -1,7 +1,6 @@
 class GlobalSuite {
-
   constructor() {
-    this.title = 'GLOBAL'
+    this.title = 'GLOBAL';
     this.jobs = [];
     this.suiteResources = {};
   }
@@ -16,7 +15,6 @@ class GlobalSuite {
       this.suiteResources[job.resultName] = job.promise;
     }
   }
-
 }
 
 module.exports = GlobalSuite;

@@ -1,11 +1,10 @@
-const Pool = require('generic-pool').Pool;
+const { Pool } = require('generic-pool');
 const SuitesManager = require('./suites-manager');
 
 const startTime = new Date().getTime() / 1000;
 let id = 0;
 
 class Job {
-
   constructor(title, requires, result, run, skipReport, globalResult) {
     this.title = title;
     this.requires = requires;
@@ -38,7 +37,7 @@ class Job {
     } else {
       this.promise = this.start();
     }
-    
+
     this.existingResult = this.getExistingResult();
 
     if (this.globalResult) {
@@ -73,6 +72,10 @@ class Job {
     }
     this.releaseResources();
     if (error) {
+      if (this.existingResult) {
+        this.status = 'error';
+        this.error = error;
+      }
       throw error;
     }
     return this.result;
@@ -80,7 +83,7 @@ class Job {
 
   log() {
     if (!this.skipReport) {
-      const time = Math.trunc(new Date().getTime() / 1000 - startTime);
+      const time = Math.trunc((new Date().getTime() / 1000) - startTime);
       console.log(`${time}: ${this.status} - ${this.title} (${this.parent.title})`);
     }
   }
@@ -93,12 +96,12 @@ class Job {
     return suite.suiteResources[this.resultName];
   }
 
-  async acquireResources() {    
+  async acquireResources() {
     if (this.requires) {
       if (!Array.isArray(this.requires)) {
         this.requires = [this.requires];
       }
-      for (let resourceName of this.requires) {
+      for (const resourceName of this.requires) {
         let suite = this.parent;
         while (!suite.suiteResources[resourceName] && suite.parent) {
           suite = suite.parent;
@@ -110,7 +113,7 @@ class Job {
         this.resources.push(resource);
       }
       this.pools = this.resources.filter(resource => resource instanceof Pool);
-      for (let pool of this.pools) {
+      for (const pool of this.pools) {
         await pool.acquire();
       }
     }
@@ -120,11 +123,10 @@ class Job {
     if (!this.pools) {
       return;
     }
-    for (let pool of this.pools) {
+    for (const pool of this.pools) {
       pool.release();
     }
   }
-
 }
 
 module.exports = Job;

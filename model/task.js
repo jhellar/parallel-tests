@@ -1,7 +1,10 @@
+const fs = require('fs');
 const Job = require('./job');
 
+const configFile = fs.readFileSync(process.argv[2], 'utf8');
+const config = JSON.parse(configFile);
+
 class Task extends Job {
-  
   constructor(title, requires, result, run, skipReport, globalResult) {
     super(title, requires, result, run, skipReport, globalResult);
 
@@ -18,7 +21,10 @@ class Task extends Job {
         }
         let error;
         try {
-          this.result = await this.run(...this.resources);
+          this.result = await Promise.race([
+            this.run(...this.resources),
+            new Promise((resolve, reject) => setTimeout(() => reject(new Error('Timeout')), config.timeout)),
+          ]);
         } catch (err) {
           error = err;
         }
@@ -30,7 +36,7 @@ class Task extends Job {
         }
         finished = true;
       } catch (error) {
-        if (retries >= 3) {
+        if (retries >= config.retries) {
           this.status = 'error';
           this.error = error;
           throw error;
@@ -39,7 +45,6 @@ class Task extends Job {
       }
     }
   }
-
 }
 
 module.exports = Task;

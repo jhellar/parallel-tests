@@ -1,7 +1,6 @@
 let curentSuite;
 
 class SuitesManager {
-
   static currentSuite() {
     return curentSuite;
   }
@@ -9,7 +8,6 @@ class SuitesManager {
   static setCurrentSuite(suite) {
     curentSuite = suite;
   }
-
 }
 
 module.exports = SuitesManager;

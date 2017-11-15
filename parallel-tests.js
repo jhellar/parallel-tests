@@ -18,41 +18,54 @@ async function run() {
   }
   HTMLReporter.report(globalSuite);
   JUnitReporter.report(globalSuite);
+  process.exit();
 }
 
 async function suite(title, params, configure) {
   new Suite(title, params.requires, params.result, configure);
 }
 
-function task(title, params, run) {
+function task(title, params, r) {
   if (typeof title !== 'string') {
-    run = params;
+    r = params;
     params = title;
     title = '';
   }
-  new Task(title, params.requires, params.result, run, params.skipReport, params.globalResult);
+  new Task(title, params.requires, params.result, r, params.skipReport, params.globalResult);
 }
 
-function beforeEach(run) {
+function beforeEach(r) {
   const currentSuite = SuitesManager.currentSuite();
-  currentSuite.beforeEach = run;
+  currentSuite.beforeEach = r;
 }
 
-function afterEach(run) {
+function afterEach(r) {
   const currentSuite = SuitesManager.currentSuite();
-  currentSuite.afterEach = run;
-}
-
-function before(run) {
-  it('before', run, true);
-}
-
-function after(run) {
-  it('after', run, true);
+  currentSuite.afterEach = r;
 }
 
 function createPool(max) {
-  return pool.createPool({ create: () => Promise.resolve(), destroy: () => Promise.resolve() }, { max });
+  return pool.createPool({
+    create: () => Promise.resolve(),
+    destroy: () => Promise.resolve(),
+  }, { max });
+}
+
+function it(title, r, skipReport) {
+  const currentSuite = SuitesManager.currentSuite();
+  if (!currentSuite.itPool) {
+    currentSuite.itPool = true;
+    currentSuite.suiteResources.itPool = Promise.resolve(createPool(1));
+  }
+  new Task(title, 'itPool', null, r, skipReport);
+}
+
+function before(r) {
+  it('before', r, true);
+}
+
+function after(r) {
+  it('after', r, true);
 }
 
 function createGlobalPool(name, max) {
@@ -61,15 +74,6 @@ function createGlobalPool(name, max) {
 
 function createGlobalResource(name) {
   new Task('Global resource', [], name, () => Promise.resolve(), true);
-}
-
-function it(title, run, skipReport) {
-  const currentSuite = SuitesManager.currentSuite();
-  if (!currentSuite.itPool) {
-    currentSuite.itPool = true;
-    currentSuite.suiteResources.itPool = Promise.resolve(createPool(1));
-  }
-  new Task(title, 'itPool', null, run, skipReport);
 }
 
 module.exports = {
@@ -83,5 +87,5 @@ module.exports = {
   afterEach,
   it,
   before,
-  after
-}
+  after,
+};

@@ -7,14 +7,15 @@ const parallel = require('./parallel-tests');
 const configFile = fs.readFileSync(process.argv[2], 'utf8');
 const config = JSON.parse(configFile);
 
-for (let name in config.pools) {
+Object.keys(config.pools).forEach((name) => {
   parallel.createGlobalPool(name, config.pools[name]);
-}
+});
 
-config.resources.forEach(resource => {
+config.resources.forEach((resource) => {
   parallel.createGlobalResource(resource);
 });
 
+// eslint-disable-next-line global-require, import/no-dynamic-require
 config.testFiles.forEach(testFile => require(path.resolve(process.cwd(), testFile)));
 
 parallel.run();

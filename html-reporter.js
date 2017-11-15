@@ -29,34 +29,8 @@ function initialize() {
   id = 0;
 }
 
-function suiteReport(suite) {
-  reports = suite.jobs.map(job => jobReport(job));
-  const result = suite.status === 'error' ? failure : (suite.status === 'skipped' ? skip : success);
-  result('a').text(suite.title);
-  id++;
-  result('a').attr('href', `#collapse${id}`);
-  result('a').attr('aria-controls', `collapse${id}`);
-  result('.collapse').attr('id', `collapse${id}`);
-  result('.card').empty();
-  reports.forEach(report => result(`#collapse${id} > .card`).append(report));
-  return result.html();
-}
-
-function jobReport(job) {
-  return job.jobs ? suiteReport(job) : taskReport(job);
-}
-
-function generateReport(job) {
-  initialize();
-  job.jobs.forEach(job => {
-    const report = jobReport(job);
-    $('#report').append(report);
-  });
-  fs.writeFileSync('report.html', $.html());
-}
-
 function failureReport(title, error) {
-  id++;
+  id += 1;
   failure('a').text(title);
   failure('a').attr('href', `#collapse${id}`);
   failure('a').attr('aria-controls', `collapse${id}`);
@@ -80,6 +54,33 @@ function taskReport(task) {
   return `<p><span class="oi oi-circle-check" title="icon name" aria-hidden="true" style="color:green"></span> ${task.title}</p>`;
 }
 
-module.exports = {
-  report: generateReport
+function suiteReport(suite) {
+  const reports = suite.jobs.map(job => (job.jobs ? suiteReport(job) : taskReport(job)));
+  let result;
+  if (suite.status === 'error') {
+    result = failure;
+  } else {
+    result = suite.status === 'skipped' ? skip : success;
+  }
+  result('a').text(suite.title);
+  id += 1;
+  result('a').attr('href', `#collapse${id}`);
+  result('a').attr('aria-controls', `collapse${id}`);
+  result('.collapse').attr('id', `collapse${id}`);
+  result('.card').empty();
+  reports.forEach(report => result(`#collapse${id} > .card`).append(report));
+  return result.html();
 }
+
+function generateReport(job) {
+  initialize();
+  job.jobs.forEach((j) => {
+    const report = j.jobs ? suiteReport(j) : taskReport(j);
+    $('#report').append(report);
+  });
+  fs.writeFileSync('report.html', $.html());
+}
+
+module.exports = {
+  report: generateReport,
+};

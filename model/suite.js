@@ -2,7 +2,6 @@ const Job = require('./job');
 const SuitesManager = require('./suites-manager');
 
 class Suite extends Job {
-  
   constructor(title, requires, result, run) {
     super(title, requires, result, run);
 
@@ -16,7 +15,7 @@ class Suite extends Job {
       this.execute();
     }
   }
-  
+
   async start() {
     try {
       await super.start();
@@ -48,7 +47,6 @@ class Suite extends Job {
       this.suiteResources[job.resultName] = job.promise;
     }
   }
-
 }
 
 module.exports = Suite;

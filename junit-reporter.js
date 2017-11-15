@@ -1,19 +1,14 @@
 const builder = require('junit-report-builder');
 
-function suiteReport(suite) {
-  const suiteReport = builder.testSuite().name(suite.title);
-  reportTestCases(suiteReport, suite.jobs, suite.title);
-}
-
-function reportTestCases(suiteReport, jobs, suiteTitle) {
-  jobs.forEach(job => {
+function reportTestCases(sReport, jobs, suiteTitle) {
+  jobs.forEach((job) => {
     if (job.jobs) {
-      reportTestCases(suiteReport, job.jobs, suiteTitle)
+      reportTestCases(sReport, job.jobs, suiteTitle);
     } else {
       if (job.skipReport) {
         return;
       }
-      const report = suiteReport.testCase()
+      const report = sReport.testCase()
         .className(suiteTitle)
         .name(job.title);
       if (job.status === 'error') {
@@ -27,15 +22,20 @@ function reportTestCases(suiteReport, jobs, suiteTitle) {
   });
 }
 
+function suiteReport(suite) {
+  const sReport = builder.testSuite().name(suite.title);
+  reportTestCases(sReport, suite.jobs, suite.title);
+}
+
 function generateReport(job) {
-  job.jobs.forEach(job => {
-    if (job.jobs) {
-      const report = suiteReport(job);
+  job.jobs.forEach((j) => {
+    if (j.jobs) {
+      suiteReport(j);
     }
   });
   builder.writeTo('report.xml');
 }
 
 module.exports = {
-  report: generateReport
-}
+  report: generateReport,
+};
