@@ -10,12 +10,7 @@ const globalSuite = new GlobalSuite();
 SuitesManager.setCurrentSuite(globalSuite);
 
 async function run() {
-  try {
-    await Promise.all(globalSuite.jobs.map(job => job.promise.catch(e => e)));
-    await Promise.all(globalSuite.jobs.map(job => job.promise));
-  } catch (error) {
-    console.error(error);
-  }
+  await Promise.all(globalSuite.jobs.map(job => job.promise.catch(e => e)));
   HTMLReporter.report(globalSuite);
   JUnitReporter.report(globalSuite);
   process.exit();

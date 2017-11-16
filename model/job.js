@@ -87,6 +87,9 @@ class Job {
   log() {
     if (!this.skipReport) {
       const time = Math.trunc((new Date().getTime() / 1000) - startTime);
+      if (this.status === 'error') {
+        console.error(this.error);
+      }
       console.log(`${time}: ${this.status} - ${this.title} (${this.parent.title})`);
     }
   }

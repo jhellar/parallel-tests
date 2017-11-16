@@ -4,6 +4,8 @@ const Job = require('./job');
 const configFile = fs.readFileSync(process.argv[2], 'utf8');
 const config = JSON.parse(configFile);
 
+const startTime = new Date().getTime() / 1000;
+
 class Task extends Job {
   constructor(title, requires, result, run, skipReport, globalResult) {
     super(title, requires, result, run, skipReport, globalResult);
@@ -42,7 +44,16 @@ class Task extends Job {
           throw error;
         }
         retries += 1;
+        this.logRetry(error, retries);
       }
+    }
+  }
+
+  logRetry(error, retry) {
+    if (!this.skipReport) {
+      const time = Math.trunc((new Date().getTime() / 1000) - startTime);
+      console.error(error);
+      console.log(`${time}: retry (${retry}/${config.retries}) - ${this.title} (${this.parent.title})`);
     }
   }
 }
