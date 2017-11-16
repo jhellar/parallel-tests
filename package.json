@@ -1,6 +1,6 @@
 {
   "name": "parallel-tests",
-  "version": "1.0.29",
+  "version": "1.0.30",
   "description": "",
   "main": "parallel-tests.js",
   "scripts": {
@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
+    "colors": "^1.1.2",
     "generic-pool": "^3.2.0",
     "junit-report-builder": "^1.2.0"
   },

@@ -11,11 +11,11 @@ function reportTestCases(sReport, jobs, suiteTitle) {
       const report = sReport.testCase()
         .className(suiteTitle)
         .name(job.title);
-      if (job.status === 'error') {
+      if (job.status === 'ERROR') {
         report.failure(job.error);
         report.stacktrace(job.error.stack);
       }
-      if (job.status === 'skipped') {
+      if (job.status === 'SKIPPED') {
         report.skipped();
       }
     }

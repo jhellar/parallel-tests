@@ -42,13 +42,13 @@ function failureReport(title, error) {
 }
 
 function taskReport(task) {
-  if (task.status === 'error') {
+  if (task.status === 'ERROR') {
     return failureReport(task.title, task.error);
   }
   if (task.skipReport) {
     return '';
   }
-  if (task.status === 'skipped') {
+  if (task.status === 'SKIPPED') {
     return `<p><span class="oi oi-warning" title="icon name" aria-hidden="true" style="color:blue"></span> ${task.title}</p>`;
   }
   return `<p><span class="oi oi-circle-check" title="icon name" aria-hidden="true" style="color:green"></span> ${task.title}</p>`;
@@ -57,10 +57,10 @@ function taskReport(task) {
 function suiteReport(suite) {
   const reports = suite.jobs.map(job => (job.jobs ? suiteReport(job) : taskReport(job)));
   let result;
-  if (suite.status === 'error') {
+  if (suite.status === 'ERROR') {
     result = failure;
   } else {
-    result = suite.status === 'skipped' ? skip : success;
+    result = suite.status === 'SKIPPED' ? skip : success;
   }
   result('a').text(suite.title);
   id += 1;

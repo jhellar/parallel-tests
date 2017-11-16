@@ -11,7 +11,7 @@ class Suite extends Job {
 
   setup() {
     super.setup();
-    if (this.parent.status === 'skipped') {
+    if (this.parent.status === 'SKIPPED') {
       this.execute();
     }
   }
@@ -20,7 +20,7 @@ class Suite extends Job {
     try {
       await super.start();
     } catch (error) {
-      if (this.status === 'skipped') {
+      if (this.status === 'SKIPPED') {
         await this.execute();
       }
       throw error;
@@ -35,7 +35,7 @@ class Suite extends Job {
       await Promise.all(this.jobs.map(job => job.promise.catch(e => e)));
       await Promise.all(this.jobs.map(job => job.promise));
     } catch (error) {
-      this.status = 'error';
+      this.status = 'ERROR';
       throw error;
     }
     this.result = await this.suiteResources[this.resultName];

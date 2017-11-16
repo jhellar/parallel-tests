@@ -1,4 +1,5 @@
 const { Pool } = require('generic-pool');
+const colors = require('colors');
 const SuitesManager = require('./suites-manager');
 
 const startTime = new Date().getTime() / 1000;
@@ -17,7 +18,7 @@ class Job {
     id += 1;
     this.id = id;
     this.resources = [];
-    this.status = 'pending';
+    this.status = 'PENDING';
 
     this.start = this.start.bind(this);
     this.execute = this.execute.bind(this);
@@ -30,8 +31,8 @@ class Job {
   }
 
   setup() {
-    if (this.parent.status === 'skipped') {
-      this.status = 'skipped';
+    if (this.parent.status === 'SKIPPED') {
+      this.status = 'SKIPPED';
       this.log();
       this.promise = Promise.resolve();
     } else {
@@ -54,7 +55,7 @@ class Job {
     try {
       await this.acquireResources();
     } catch (error) {
-      this.status = 'skipped';
+      this.status = 'SKIPPED';
       this.log();
       throw error;
     }
@@ -66,7 +67,7 @@ class Job {
         this.result = await this.existingResult;
       } else {
         await this.execute();
-        this.status = 'done';
+        this.status = 'DONE';
       }
     } catch (err) {
       error = err;
@@ -74,7 +75,7 @@ class Job {
     this.releaseResources();
     if (error) {
       if (this.existingResult) {
-        this.status = 'error';
+        this.status = 'ERROR';
         this.error = error;
       }
       this.log();
@@ -87,10 +88,18 @@ class Job {
   log() {
     if (!this.skipReport) {
       const time = Math.trunc((new Date().getTime() / 1000) - startTime);
-      if (this.status === 'error') {
-        console.error(this.error);
+      if (this.status === 'ERROR') {
+        console.error(`${this.error.name}: ${this.error.message}`);
       }
-      console.log(`${time}: ${this.status} - ${this.title} (${this.parent.title})`);
+      let color;
+      switch (this.status) {
+        case 'DONE': color = 'green'; break;
+        case 'ERROR': color = 'red'; break;
+        case 'SKIPPED': color = 'yellow'; break;
+        default: color = null;
+      }
+      const message = `${time}: ${this.status} - ${this.title} (${this.parent.title})`;
+      console.log(color ? message[color] : message);
     }
   }
 
