@@ -66,6 +66,7 @@ class Job {
         this.result = await this.existingResult;
       } else {
         await this.execute();
+        this.status = 'done';
       }
     } catch (err) {
       error = err;
@@ -76,8 +77,10 @@ class Job {
         this.status = 'error';
         this.error = error;
       }
+      this.log();
       throw error;
     }
+    this.log();
     return this.result;
   }
 
