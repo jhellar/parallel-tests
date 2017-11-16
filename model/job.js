@@ -98,9 +98,19 @@ class Job {
         case 'SKIPPED': color = 'yellow'; break;
         default: color = null;
       }
-      const message = `${time}: ${this.status} - ${this.title} (${this.parent.title})`;
+      const message = `${time}: ${this.status} - ${this.title} (${this.parentsTitles()})`;
       console.log(color ? message[color] : message);
     }
+  }
+
+  parentsTitles() {
+    const p = [];
+    let suite = this.parent;
+    while (suite.parent) {
+      p.push(suite.title);
+      suite = suite.parent;
+    }
+    return p.join(' - ');
   }
 
   getExistingResult() {

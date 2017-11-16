@@ -53,7 +53,7 @@ class Task extends Job {
     if (!this.skipReport) {
       const time = Math.trunc((new Date().getTime() / 1000) - startTime);
       console.error(`${error.name}: ${error.message}`);
-      console.log(`${time}: retry (${retry}/${config.retries}) - ${this.title} (${this.parent.title})`);
+      console.log(`${time}: retry (${retry}/${config.retries}) - ${this.title} (${this.parentsTitles()})`);
     }
   }
 }
