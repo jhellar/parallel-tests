@@ -53,6 +53,9 @@ class Job {
 
   async start() {
     try {
+      if (this.parent.beforePromise) {
+        await this.parent.beforePromise;
+      }
       await this.acquireResources();
     } catch (error) {
       this.status = 'SKIPPED';

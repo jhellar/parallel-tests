@@ -1,5 +1,6 @@
 const fs = require('fs');
 const Job = require('./job');
+const runWithTimeout = require('../utils/run-with-timeout');
 
 const configFile = fs.readFileSync(process.argv[2], 'utf8');
 const config = JSON.parse(configFile);
@@ -19,19 +20,16 @@ class Task extends Job {
     while (!finished) {
       try {
         if (this.parent.beforeEach) {
-          await this.parent.beforeEach();
+          await runWithTimeout(this.parent.beforeEach(), config.timeout);
         }
         let error;
         try {
-          this.result = await Promise.race([
-            this.run(...this.resources),
-            new Promise((resolve, reject) => setTimeout(() => reject(new Error('Timeout')), config.timeout)),
-          ]);
+          this.result = await runWithTimeout(this.run(...this.resources), config.timeout);
         } catch (err) {
           error = err;
         }
         if (this.parent.afterEach) {
-          await this.parent.afterEach(error);
+          await runWithTimeout(this.parent.afterEach(error), config.timeout);
         }
         if (error) {
           throw error;

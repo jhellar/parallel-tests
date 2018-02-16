@@ -1,10 +1,15 @@
 const pool = require('generic-pool');
+const fs = require('fs');
 const Task = require('./model/task');
 const Suite = require('./model/suite');
 const GlobalSuite = require('./model/global-suite');
 const SuitesManager = require('./model/suites-manager');
 const HTMLReporter = require('./html-reporter');
 const JUnitReporter = require('./junit-reporter');
+const runWithTimeout = require('./utils/run-with-timeout');
+
+const configFile = fs.readFileSync(process.argv[2], 'utf8');
+const config = JSON.parse(configFile);
 
 const globalSuite = new GlobalSuite();
 SuitesManager.setCurrentSuite(globalSuite);
@@ -17,7 +22,7 @@ async function run() {
 }
 
 async function suite(title, params, configure) {
-  new Suite(title, params.requires, params.result, configure);
+  new Suite(title, params.requires, params.result, configure, params.timeout);
 }
 
 function task(title, params, r) {
@@ -56,11 +61,17 @@ function it(title, r, skipReport) {
 }
 
 function before(r) {
-  it('before', r, true);
+  const currentSuite = SuitesManager.currentSuite();
+  if (currentSuite.status !== 'SKIPPED') {
+    currentSuite.beforePromise = runWithTimeout(r(), config.timeout);
+  }
 }
 
 function after(r) {
-  it('after', r, true);
+  const currentSuite = SuitesManager.currentSuite();
+  if (currentSuite.status !== 'SKIPPED') {
+    currentSuite.after = r;
+  }
 }
 
 function createGlobalPool(name, max) {
