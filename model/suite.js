@@ -40,11 +40,7 @@ class Suite extends Job {
     this.run(...this.resources);
     SuitesManager.setCurrentSuite(this.parent);
     try {
-      if (this.timeout) {
-        await runWithTimeout(this.executeJobs(), this.timeout);
-      } else {
-        await this.executeJobs();
-      }
+      await this.executeJobs();
     } catch (error) {
       this.status = 'ERROR';
       this.error = error;
@@ -54,17 +50,24 @@ class Suite extends Job {
   }
 
   async executeJobs() {
-    if (this.beforePromise) {
-      await this.beforePromise.catch(e => e);
-    }
     let error;
+    if (this.before && this.status === 'PENDING') {
+      try {
+        await runWithTimeout(this.before(), config.timeout);
+      } catch (err) {
+        error = err;
+        this.status = 'ERROR';
+        this.error = error;
+      }
+    }
     try {
+      this.jobs.forEach(job => job.setup());
       await Promise.all(this.jobs.map(job => job.promise.catch(e => e)));
       await Promise.all(this.jobs.map(job => job.promise));
     } catch (err) {
       error = err;
     }
-    if (this.after) {
+    if (this.after && this.status === 'PENDING') {
       await runWithTimeout(this.after(), config.timeout);
     }
     if (error) {

@@ -15,6 +15,7 @@ const globalSuite = new GlobalSuite();
 SuitesManager.setCurrentSuite(globalSuite);
 
 async function run() {
+  globalSuite.jobs.forEach(job => job.setup());
   await Promise.all(globalSuite.jobs.map(job => job.promise.catch(e => e)));
   HTMLReporter.report(globalSuite);
   JUnitReporter.report(globalSuite);
@@ -22,7 +23,9 @@ async function run() {
 }
 
 async function suite(title, params, configure) {
-  new Suite(title, params.requires, params.result, configure, params.timeout);
+  const newSuite = new Suite(title, params.requires, params.result, configure, params.timeout);
+  const currentSuite = SuitesManager.currentSuite();
+  currentSuite.jobs.push(newSuite);
 }
 
 function task(title, params, r) {
@@ -31,7 +34,9 @@ function task(title, params, r) {
     params = title;
     title = '';
   }
-  new Task(title, params.requires, params.result, r, params.skipReport, params.globalResult);
+  const newTask = new Task(title, params.requires, params.result, r, params.skipReport, params.globalResult);
+  const currentSuite = SuitesManager.currentSuite();
+  currentSuite.jobs.push(newTask);
 }
 
 function beforeEach(r) {
@@ -57,13 +62,14 @@ function it(title, r, skipReport) {
     currentSuite.itPool = true;
     currentSuite.suiteResources.itPool = Promise.resolve(createPool(1));
   }
-  new Task(title, 'itPool', null, r, skipReport);
+  const newTask = new Task(title, 'itPool', null, r, skipReport);
+  currentSuite.jobs.push(newTask);
 }
 
 function before(r) {
   const currentSuite = SuitesManager.currentSuite();
   if (currentSuite.status !== 'SKIPPED') {
-    currentSuite.beforePromise = runWithTimeout(r(), config.timeout);
+    currentSuite.before = r;
   }
 }
 
@@ -75,11 +81,15 @@ function after(r) {
 }
 
 function createGlobalPool(name, max) {
-  new Task('Global pool', [], name, () => createPool(max), true);
+  const newTask = new Task('Global pool', [], name, () => createPool(max), true);
+  const currentSuite = SuitesManager.currentSuite();
+  currentSuite.jobs.push(newTask);
 }
 
 function createGlobalResource(name) {
-  new Task('Global resource', [], name, () => Promise.resolve(), true);
+  const newTask = new Task('Global resource', [], name, () => Promise.resolve(), true);
+  const currentSuite = SuitesManager.currentSuite();
+  currentSuite.jobs.push(newTask);
 }
 
 module.exports = {

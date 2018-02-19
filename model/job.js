@@ -26,12 +26,10 @@ class Job {
     if (this.run) {
       this.run = this.run.bind(this);
     }
-
-    this.setup();
   }
 
   setup() {
-    if (this.parent.status === 'SKIPPED') {
+    if (this.parent.status !== 'PENDING') {
       this.status = 'SKIPPED';
       this.log();
       this.promise = Promise.resolve();
@@ -48,14 +46,10 @@ class Job {
       }
       globalSuite.addResource(this);
     }
-    this.parent.addJob(this);
   }
 
   async start() {
     try {
-      if (this.parent.beforePromise) {
-        await this.parent.beforePromise;
-      }
       await this.acquireResources();
     } catch (error) {
       this.status = 'SKIPPED';

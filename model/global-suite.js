@@ -3,6 +3,7 @@ class GlobalSuite {
     this.title = 'GLOBAL';
     this.jobs = [];
     this.suiteResources = {};
+    this.status = 'PENDING';
   }
 
   addJob(job) {
