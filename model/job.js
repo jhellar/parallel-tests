@@ -46,6 +46,9 @@ class Job {
       }
       globalSuite.addResource(this);
     }
+    if (this.resultName) {
+      this.parent.suiteResources[this.resultName] = this.promise;
+    }
   }
 
   async start() {
