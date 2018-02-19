@@ -65,6 +65,7 @@ class Job {
       // If result already exists skip execution
       if (this.existingResult) {
         this.result = await this.existingResult;
+        this.status = 'SKIPPED';
       } else {
         await this.execute();
         this.status = 'DONE';
